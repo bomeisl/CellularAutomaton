@@ -1,37 +1,33 @@
-import random
 from Cell import Cell
-
+from ConwayRules import ConwayRules
 
 class Lattice:
-    def __init__(self,n,m):
+    def __init__(self,n,m,rule_set):
+        self.n = n
+        self.m = m
         self.lattice = []
-        for i in range(n-1):
+        self.rule_set = ConwayRules()
+        for i in range(1,n):
             row = []
-            for j in range(m-1):
-                seed = random.randint(0,1)
-                row.append(seed)
+            for j in range(1,m):
+                row.append(Cell(i,j))
             self.lattice.append(row)
-        self.neighbors = [
-            [1,0],
-            [0,1],
-            [-1,0],
-            [0,-1],
-            [1,1],
-            [-1,-1],
-            [-1,1],
-            [1,-1]
-        ]
 
-    def evolve(self):
-        for i in range(self.n-1):
-            for j in range(self.m-1):
+    def initial_populate(self):
+        for i in range(1,self.n):
+            row = []
+            for j in range(1,self.m):
                 cell = Cell(i,j)
-                neighbor_array = []
-                for neighbor in self.neighbors:
-                    cell = Cell(i+neighbor[0],j+neighbor[1])
-                    neighbor_array.append(cell.alive)
-                new_cell = cell.evolve(neighbor_array)
-                self.lattice[i][j] = new_cell
+                row.append(cell.alive)
+            self.lattice.append(row)
+
+    def evolve(self, rule_set):
+        for i in range(1,self.n):
+            for j in range(1,self.m):
+                cell = Cell(i,j)
+                neighbor_array = self.rule_set.get_neighbors(cell, self)
+                output = self.rule_set.output(cell, neighbor_array)
+                self.lattice[i][j] = output
 
 
 
